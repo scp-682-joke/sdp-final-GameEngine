@@ -4,6 +4,7 @@ import java.util.Scanner;
 import config.*;
 import creation.*;
 import dimension.*;
+import horror.HorrorEngine;
 
 public final class Main {
     private Main() { }
@@ -18,7 +19,6 @@ public final class Main {
         }
     }
 
-    // Developer 2 can reuse the configuration workflow without the demo menu.
     public static GameProject configureProject(Scanner scanner) {
         while (true) {
             String genre = readInt(scanner, "Choose genre:\n1. Horror\n2. Action", 1, 2) == 1 ? "HORROR" : "ACTION";
@@ -88,11 +88,17 @@ public final class Main {
 
     private static void runMenu(Scanner scanner, GameProject project) {
         Random seeds = new Random();
+        GameConsole console = new GameConsole(scanner, seeds);
         while (true) {
-            int choice = readInt(scanner, "\n1. View project configuration\n2. Generate randomized scenario\n3. Generate again\n4. Exit", 1, 4);
-            if (choice == 4) { return; }
+            int choice = readInt(scanner, "\n1. View project configuration\n2. Generate randomized scenario\n3. Generate again"
+                    + "\n4. Start simulation\n5. Create a new project\n6. Exit", 1, 6);
+            if (choice == 6) { return; }
             if (choice == 1) {
                 printProject(project);
+            } else if (choice == 4) {
+                console.play(project);
+            } else if (choice == 5) {
+                project = configureProject(scanner);
             } else {
                 DimensionRules rules = "2D".equals(project.getDimension()) ? new Rules2D() : new Rules3D();
                 ScenarioCreator creator = "ACTION".equals(project.getGenre())
@@ -117,6 +123,8 @@ public final class Main {
             }
             System.out.println("Global Pursuer: " + project.getHorrorConfig().getPursuerName()
                     + " | countdown=" + project.getHorrorConfig().getPursuerCountdown());
+            System.out.println("Minimum turns needed: " + HorrorEngine.minimumTurns(project.getHorrorConfig())
+                    + " | recommended countdown: " + HorrorEngine.recommendedCountdown(project.getHorrorConfig()));
         }
     }
 
@@ -145,19 +153,18 @@ public final class Main {
                 + " | " + spec.getBehavior() + " | configured quantity=" + spec.getQuantity();
     }
 
-    private static String readText(Scanner scanner, String prompt) {
+    static String readText(Scanner scanner, String prompt) {
         System.out.println(prompt);
         return scanner.nextLine();
     }
 
-    private static int readInt(Scanner scanner, String prompt, int minimum, int maximum) {
+    static int readInt(Scanner scanner, String prompt, int minimum, int maximum) {
         while (true) {
             String text = readText(scanner, prompt + " [" + minimum + "–" + maximum + "]");
             try {
                 int value = Integer.parseInt(text.trim());
                 if (value >= minimum && value <= maximum) { return value; }
             } catch (NumberFormatException exception) {
-                // Show the same concise input guidance for malformed and out-of-range values.
             }
             System.out.println("Enter a whole number from " + minimum + " to " + maximum + ".");
         }
