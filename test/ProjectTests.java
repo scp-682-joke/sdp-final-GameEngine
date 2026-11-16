@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import config.*;
 import creation.*;
-import com.team.game.dimension.DimensionRules.ActionInteraction;
-import com.team.game.dimension.DimensionRules.HorrorInteraction;
+import dimension.*;
+import dimension.DimensionRules.ActionInteraction;
+import dimension.DimensionRules.HorrorInteraction;
 
 /** Plain Java runner: failures throw AssertionError, even without -ea. */
 public final class ProjectTests {
@@ -51,6 +52,9 @@ public final class ProjectTests {
         rejects(() -> action("2D").setGenre("RACING").build());
         rejects(() -> action("4D").build());
         rejects(() -> action("2D").setPlayerHealth(0).build());
+        rejects(() -> action("2D").setPlayerHealth(201).build());
+        check(action("2D").setPlayerHealth(200).build().getActionConfig().getPlayerHealth() == 200,
+                "Player HP upper bound accepted");
         rejects(() -> actionBase().build());
         rejects(() -> actionBase().addActionEnemy("A", 1, 1, "AGGRESSIVE", 4).build());
         rejects(() -> actionBase().addActionEnemy("A", 1, 1, "AGGRESSIVE", 6).build());
