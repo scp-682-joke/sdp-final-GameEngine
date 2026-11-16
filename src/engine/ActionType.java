@@ -1,14 +1,8 @@
 package engine;
 
 public enum ActionType {
-    ATTACK(false), MOVING_ATTACK(false), ENTER_BUILDING(false), USE_ELEVATOR(false),
-    HIDE_WAIT(false), HIDE_CLOSET(false), HIDE_TABLE(false), GO_FORWARD(false),
-    GO_FORWARD_SIDE_ROUTE(false), SEARCH(false), USE_ITEM(false), FINAL_ESCAPE(false),
-    INSPECT(true), VIEW_STATUS(true);
-
-    private final boolean free;
-
-    ActionType(boolean free) { this.free = free; }
-
-    public boolean isFree() { return free; }
+    ATTACK, MOVING_ATTACK, ENTER_BUILDING, USE_ELEVATOR,
+    HIDE_WAIT, HIDE_CLOSET, HIDE_TABLE, GO_FORWARD,
+    SEARCH, USE_ITEM, FINAL_ESCAPE,
+    INSPECT, VIEW_STATUS
 }

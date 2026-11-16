@@ -113,11 +113,11 @@ public final class HorrorEngine implements GameEngine {
         int roomIndex = firstUnclearedRoom();
         EncounterStep step = rooms.get(roomIndex).resolve(action, random);
         List<String> messages = new ArrayList<>(List.of(step.getMessage()));
+        spendTime(step.getTimeCost());
         if (step.isFatal()) {
             lose(step.getMessage(), messages);
-            return TurnResult.accepted(false, messages, outcome);
+            return TurnResult.accepted(true, messages, outcome);
         }
-        spendTime(step.getTimeCost());
         if (step.isRoomCleared()) {
             publisher.publish(new GameEvent(EventType.ROOM_CLEARED, roomIndex + 1, "Room " + (roomIndex + 1) + " cleared"));
         }
@@ -145,6 +145,7 @@ public final class HorrorEngine implements GameEngine {
     private void lose(String reason, List<String> messages) {
         outcome = GameOutcome.DEFEAT;
         cause = reason;
+        if (!messages.contains(reason)) { messages.add(reason); }
         messages.add("You have been defeated.");
         publisher.publish(new GameEvent(EventType.PLAYER_DEFEATED, 0, reason));
     }
@@ -167,10 +168,13 @@ public final class HorrorEngine implements GameEngine {
     public String getResults(StatisticsTracker statistics) {
         String result = outcome == GameOutcome.IN_PROGRESS ? "IN PROGRESS" : outcome.toString();
         return "Final result: " + result
+                + "\nProject: " + scenario.getProject().getName() + " | Dimension: " + scenario.getProject().getDimension()
                 + "\nRooms completed: " + statistics.getRoomsCleared() + "/" + rooms.size()
+                + "\nTotal enemies avoided: " + statistics.getRoomsCleared()
                 + "\nTurns used: " + turnsUsed
                 + "\nRemaining countdown: " + scenario.getRemainingCountdown()
-                + (outcome == GameOutcome.DEFEAT ? "\nCause of defeat: " + cause : "");
+                + (outcome == GameOutcome.DEFEAT ? "\nCause of defeat: " + cause : "")
+                + (outcome == GameOutcome.VICTORY ? "\nCause of completion: ESCAPED BUILDING" : "");
     }
 
     private int firstUnclearedRoom() {

@@ -15,7 +15,7 @@ public final class EncounterStep {
 
     public static EncounterStep progress(String message, int timeCost) { return new EncounterStep(message, timeCost, false, false); }
     public static EncounterStep cleared(String message, int timeCost) { return new EncounterStep(message, timeCost, false, true); }
-    public static EncounterStep fatal(String message) { return new EncounterStep(message, 0, true, false); }
+    public static EncounterStep fatal(String message) { return new EncounterStep(message, 1, true, false); }
 
     public String getMessage() { return message; }
     public int getTimeCost() { return timeCost; }

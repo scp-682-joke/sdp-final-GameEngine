@@ -46,13 +46,12 @@ public final class ActionEngine implements GameEngine {
 
     private void createCombatants() {
         Map<String, Integer> perName = new HashMap<>();
-        int id = 1;
         for (Building building : scenario.getBuildings()) {
             List<ActionCombatant> inBuilding = new ArrayList<>();
             for (EnemyInstance enemy : building.getEnemies()) {
                 String name = enemy.getSpecification().getName();
                 int number = perName.merge(name, 1, Integer::sum);
-                inBuilding.add(new ActionCombatant(id++, name + " #" + number, enemy));
+                inBuilding.add(new ActionCombatant(name + " #" + number, enemy));
             }
             combatants.add(inBuilding);
         }
@@ -237,10 +236,11 @@ public final class ActionEngine implements GameEngine {
         String result = outcome == GameOutcome.IN_PROGRESS ? "IN PROGRESS"
                 : outcome + (completionType.isEmpty() ? "" : " (" + completionType + ")");
         return "Final result: " + result
-                + "\nTotal enemies defeated: " + statistics.getEnemiesDefeated()
+                + "\nTotal enemies defeated: " + statistics.getEnemiesDefeated() + "/"
+                + combatants.stream().mapToInt(List::size).sum()
                 + "\nBuildings cleared: " + statistics.getBuildingsCleared() + "/" + cleared.length
                 + "\nTotal damage received: " + damageReceived
-                + "\nRemaining player HP: " + scenario.getPlayerHealth()
+                + "\nRemaining player HP: " + scenario.getPlayerHealth() + "/" + scenario.getProject().getActionConfig().getPlayerHealth()
                 + "\nTurns used: " + turnsUsed;
     }
 

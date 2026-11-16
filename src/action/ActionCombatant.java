@@ -3,19 +3,16 @@ package action;
 import dimension.ActionScenario.EnemyInstance;
 
 public final class ActionCombatant {
-    private final int id;
     private final String label;
     private final EnemyInstance enemy;
     private final EnemyBehavior behavior;
 
-    public ActionCombatant(int id, String label, EnemyInstance enemy) {
-        this.id = id;
+    public ActionCombatant(String label, EnemyInstance enemy) {
         this.label = label;
         this.enemy = enemy;
         this.behavior = EnemyBehavior.forName(enemy.getSpecification().getBehavior());
     }
 
-    public int getId() { return id; }
     public String getLabel() { return label; }
     public EnemyInstance getEnemy() { return enemy; }
     public EnemyBehavior getBehavior() { return behavior; }

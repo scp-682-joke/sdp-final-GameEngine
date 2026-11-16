@@ -24,7 +24,7 @@ public final class ProjectValidator {
         require(project.getHorrorConfig().getEnemies().isEmpty()
                 && project.getHorrorConfig().getPursuerName() == null
                 && project.getHorrorConfig().getPursuerCountdown() == 0, "Action cannot contain Horror configuration.");
-        require(config.getPlayerHealth() > 0, "Player HP must be positive.");
+        require(config.getPlayerHealth() >= 1 && config.getPlayerHealth() <= 200, "Player HP must be 1–200.");
         require(config.getEnemies().size() >= 1 && config.getEnemies().size() <= 5, "Action needs 1–5 enemy types.");
         Set<String> names = new HashSet<>();
         long total = 0;

@@ -10,8 +10,6 @@ import engine.ActionType;
 public final class DistractorBehavior implements HorrorBehavior {
     public static final int SEARCH_SUCCESS_PERCENT = 50;
     public static final int GUARANTEED_SEARCH_ATTEMPT = 3;
-    static final int DIRECT_ROUTE_COST = 1;
-    static final int SIDE_ROUTE_COST = 2;
 
     private int searchAttempts;
     private boolean itemFound;
@@ -33,9 +31,6 @@ public final class DistractorBehavior implements HorrorBehavior {
         }
         if (interactions.contains(HorrorInteraction.ADVANCE)) {
             actions.add(GameAction.of(ActionType.GO_FORWARD, "Go forward"));
-            if (interactions.contains(HorrorInteraction.CHOOSE_HIDING_LOCATION)) {
-                actions.add(GameAction.of(ActionType.GO_FORWARD_SIDE_ROUTE, "Take the side route (costs one extra turn)"));
-            }
         }
         return actions;
     }
@@ -45,8 +40,7 @@ public final class DistractorBehavior implements HorrorBehavior {
         switch (action.getType()) {
             case SEARCH: return search(random);
             case USE_ITEM: return useItem();
-            case GO_FORWARD_SIDE_ROUTE: return pass(SIDE_ROUTE_COST);
-            default: return pass(DIRECT_ROUTE_COST);
+            default: return pass();
         }
     }
 
@@ -61,10 +55,10 @@ public final class DistractorBehavior implements HorrorBehavior {
         return EncounterStep.progress("You throw the can. The enemy rushes toward the noise.", 1);
     }
 
-    private EncounterStep pass(int timeCost) {
+    private EncounterStep pass() {
         if (!distracted) { return EncounterStep.fatal("The enemy catches you trying to pass."); }
         cleared = true;
-        return EncounterStep.cleared("You slip past the distracted enemy. The room is clear.", timeCost);
+        return EncounterStep.cleared("You slip past the distracted enemy. The room is clear.", 1);
     }
 
     @Override
