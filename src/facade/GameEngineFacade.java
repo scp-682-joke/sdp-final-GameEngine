@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import action.ActionEngine;
 import config.GameProject;
+import config.ProjectValidator;
 import creation.ActionScenarioCreator;
 import creation.HorrorScenarioCreator;
 import creation.ScenarioCreator;
@@ -31,11 +32,22 @@ public final class GameEngineFacade {
     private ResultLogger logger;
     private GameEventPublisher publisher;
 
-    public void startSimulation(GameProject project, long seed) {
+    public GameScenario generateScenario(GameProject project, long seed) {
+        ProjectValidator.validate(project);
         DimensionRules rules = "2D".equals(project.getDimension()) ? new Rules2D() : new Rules3D();
         ScenarioCreator creator = "ACTION".equals(project.getGenre())
                 ? new ActionScenarioCreator(rules) : new HorrorScenarioCreator(rules);
-        GameScenario scenario = creator.create(project, seed);
+        return creator.create(project, seed);
+    }
+
+    public static void validateSimulation(GameProject project) {
+        ProjectValidator.validate(project);
+        if ("HORROR".equals(project.getGenre())) { HorrorEngine.validateCountdown(project); }
+    }
+
+    public void startSimulation(GameProject project, long seed) {
+        validateSimulation(project);
+        GameScenario scenario = generateScenario(project, seed);
         GameEventPublisher newPublisher = new GameEventPublisher();
         StatisticsTracker newStatistics = new StatisticsTracker();
         ResultLogger newLogger = new ResultLogger();
